@@ -1,0 +1,177 @@
+<!-- BEGIN PAGE HEADER-->
+<div class="page-bar">
+    <ul class="page-breadcrumb">
+        <li>
+            <i class="fa fa-home"></i>
+            <a href="#/dashboard.html">Home</a>
+            <i class="fa fa-angle-right"></i>
+        </li>
+        <li>
+            <a href="#/service.html">Services</a>
+        </li>
+    </ul>
+  
+</div>
+<h3 class="page-title"> Services
+    <small>services list</small>
+</h3>
+<!-- END PAGE HEADER-->
+<!-- BEGIN MAIN CONTENT -->
+<div class="row" ng-controller="ServicePageController" >
+    <div class="col-md-12">
+        <!-- BEGIN EXAMPLE TABLE PORTLET-->
+        <div class="portlet light bordered">
+            <div class="portlet-title">
+                <div class="caption font-dark">
+                    <i class="icon-settings font-dark"></i>
+                    <span class="caption-subject bold uppercase"> Managed Services</span>
+                </div>
+                <div class="actions">
+                    <!-- <div class="btn-group btn-group-devided" data-toggle="buttons">
+                        <label class="btn btn-transparent dark btn-outline btn-circle btn-sm active">
+                            <input type="radio" name="options" class="toggle" id="option1">Actions</label>
+                        <label class="btn btn-transparent dark btn-outline btn-circle btn-sm">
+                            <input type="radio" name="options" class="toggle" id="option2">Settings</label>
+                    </div> -->
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div class="table-toolbar">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="btn-group">
+								<button id="btn-add" class="btn sbold green" ng-click="toggle('add', 0)">Add New Service <i class="fa fa-plus"></i></button>
+								
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                             <div class="btn-group pull-right">
+								<div class="col-xs-6">
+									<input ng-model="q" id="search" class="form-control" placeholder="Search">
+								</div>
+								<div class="col-xs-6">
+								  <input type="number" min="1" max="100" class="form-control" ng-model="pageSize">
+								</div>
+                                <!-- <button class="btn green  btn-outline dropdown-toggle" data-toggle="dropdown">Tools
+                                    <i class="fa fa-angle-down"></i>
+                                </button>
+                                <ul class="dropdown-menu pull-right">
+                                    <li>
+                                        <a href="javascript:;">
+                                            <i class="fa fa-print"></i> Print </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <i class="fa fa-file-pdf-o"></i> Save as PDF </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <i class="fa fa-file-excel-o"></i> Export to Excel </a>
+                                    </li>
+                                </ul> -->
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-striped table-bordered table-hover table-checkable order-column" >
+                    <thead>
+                        <tr>
+							<th>ID</th>
+							<th>Name</th>
+							<th>Description</th>
+							<th>Category</th>
+							<th>Status</th>
+							<th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="searchable">
+						<tr class="odd gradeX" dir-paginate="servicelist in servicelists | filter:q | itemsPerPage: pageSize">
+							<td>{{ $index + 1 }}</td>
+							<td>{{ servicelist.name }}</td>
+							<td>{{ servicelist.description }}</td>
+							<td>{{ servicelist.category }}</td>
+							<td>{{ servicelist.status }}</td>
+							<td>
+								<button class="btn btn-default btn-xs btn-detail" ng-click="toggle('edit', servicelist.id)">Edit</button>
+								<button class="btn btn-danger btn-xs btn-delete" ng-click="confirmDelete(servicelist.id,$index)">Delete</button>
+							</td>
+						</tr>
+                    </tbody>
+                </table>
+				
+				<dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" template-url="tpl/dirPagination.tpl.html"></dir-pagination-controls>
+				
+            </div>
+        </div>
+        <!-- END EXAMPLE TABLE PORTLET-->
+    </div>
+
+
+
+<!-- Modal (Pop up when detail button clicked) -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
+				<h4 class="modal-title" id="myModalLabel">{{form_title}}</h4>
+			</div>
+			<div class="modal-body">
+				<form name="frmEmployees" class="form-horizontal" novalidate="" id="frmEmployees">
+
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Name</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control has-error" id="name" name="name" placeholder="name" value="{{name}}" 
+							ng-model="servicelist.name" ng-required="true">
+							<span class="help-inline" 
+							ng-show="frmEmployees.name.$invalid && frmEmployees.name.$touched">Name field is required</span>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-3 control-label">Description</label>
+						<div class="col-sm-9">
+							<textarea class="form-control" id="description" name="description" placeholder="Description"
+							ng-model="servicelist.description" ng-required="true">{{description}}</textarea>
+
+							<span class="help-inline" 
+							ng-show="frmEmployees.description.$invalid && frmEmployees.description.$touched">Description field is required</span>
+
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-3 control-label">Category</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control" id="category" name="category" placeholder="Category" value="{{category}}" 
+							ng-model="servicelist.category" ng-required="true">
+						<span class="help-inline" 
+							ng-show="frmEmployees.category.$invalid && frmEmployees.category.$touched">Category field is required</span>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-3 control-label">Status</label>
+						<div class="col-sm-9">
+							<!--input type="text" class="form-control" id="status" name="status" placeholder="Status" value="{{status}}" 
+							ng-model="servicelist.status" ng-required="true"-->
+							<input type="radio" name="status" ng-model="servicelist.status" ng-required="true" value="Active">Active
+							<input type="radio" name="status" ng-model="servicelist.status" ng-required="true" value="Inactive">Inactive
+							<span class="help-inline" 
+								ng-show="frmEmployees.status.$invalid && frmEmployees.status.$touched">Status field is required</span>
+							</div>
+					</div>
+
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="btn-save" ng-click="save(modalstate, id)" ng-disabled="frmEmployees.$invalid">Save changes</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+</div>
+<!-- END MAIN CONTENT -->

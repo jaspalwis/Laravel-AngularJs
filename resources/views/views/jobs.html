@@ -1,0 +1,429 @@
+<!-- BEGIN PAGE HEADER-->
+<div class="page-bar">
+    <ul class="page-breadcrumb">
+        <li>
+            <i class="fa fa-home"></i>
+            <a href="#/dashboard.html">Home</a>
+            <i class="fa fa-angle-right"></i>
+        </li>
+        <li>
+            <a href="#/jobs.html">Jobs</a>
+        </li>
+    </ul>
+  
+</div>
+<h3 class="page-title"> Jobs
+    <small>jobs list</small>
+</h3>
+<!-- END PAGE HEADER-->
+<!-- BEGIN MAIN CONTENT -->
+<div class="row" ng-controller="JobsPageController" >
+    <div class="col-md-12">
+        <!-- BEGIN EXAMPLE TABLE PORTLET-->
+        <div class="portlet light bordered">
+            <div class="portlet-title">
+                <div class="caption font-dark">
+                    <i class="icon-settings font-dark"></i>
+                    <span class="caption-subject bold uppercase"> Managed Jobs</span>
+                </div>
+                <div class="actions">
+                    <!-- <div class="btn-group btn-group-devided" data-toggle="buttons">
+                        <label class="btn btn-transparent dark btn-outline btn-circle btn-sm active">
+                            <input type="radio" name="options" class="toggle" id="option1">Actions</label>
+                        <label class="btn btn-transparent dark btn-outline btn-circle btn-sm">
+                            <input type="radio" name="options" class="toggle" id="option2">Settings</label>
+                    </div> -->
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div class="table-toolbar">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="btn-group">
+								<button id="btn-add" class="btn sbold green" ng-click="toggle('add', 0)">Add New Job <i class="fa fa-plus"></i></button>
+								
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                             <div class="btn-group pull-right">
+								<div class="col-xs-6">
+									<input ng-model="q" id="search" class="form-control" placeholder="Search">
+								</div>
+								<div class="col-xs-6">
+								  <input type="number" min="1" max="100" class="form-control" ng-model="pageSize">
+								</div>
+                                <!-- <button class="btn green  btn-outline dropdown-toggle" data-toggle="dropdown">Tools
+                                    <i class="fa fa-angle-down"></i>
+                                </button>
+                                <ul class="dropdown-menu pull-right">
+                                    <li>
+                                        <a href="javascript:;">
+                                            <i class="fa fa-print"></i> Print </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <i class="fa fa-file-pdf-o"></i> Save as PDF </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <i class="fa fa-file-excel-o"></i> Export to Excel </a>
+                                    </li>
+                                </ul> -->
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-striped table-bordered table-hover table-checkable order-column" >
+                    <thead>
+                        <tr>
+							<th>ID</th>
+							<th>Address 1</th>
+							<th>Address 2</th>
+							<th>City</th>
+							<th>State</th>
+							<th>Action</th>
+						</tr>
+                    </thead>
+                    <tbody class="searchable">
+						<tr class="odd gradeX" dir-paginate="servicelist in servicelists | filter:q | itemsPerPage: pageSize">
+							<td>{{ $index + 1 }}</td>
+							<td>{{ servicelist.address_1 }}</td>
+							<td>{{ servicelist.address_2 }}</td>
+							<td>{{ servicelist.city }}</td>
+							<td>{{ servicelist.state }}</td>
+							<td>
+								<button class="btn btn-success btn-xs btn-detail" ng-click="viewtoggle(servicelist.id)">View</button>
+								<button class="btn btn-default btn-xs btn-detail" ng-click="toggle('edit', servicelist.id)">Edit</button>
+								<button class="btn btn-danger btn-xs btn-delete" ng-click="confirmDelete(servicelist.id,$index)">Delete</button>
+							</td>
+						</tr>
+                    </tbody>
+                </table>
+				
+				<dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" template-url="tpl/dirPagination.tpl.html"></dir-pagination-controls>
+				
+            </div>
+        </div>
+        <!-- END EXAMPLE TABLE PORTLET-->
+    </div>
+
+
+
+<!-- Modal (Pop up when detail button clicked) -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
+				<h4 class="modal-title" id="myModalLabel">{{form_title}}</h4>
+			</div>
+			<div class="modal-body" ng-disabled="isClicked">
+				<form name="frmJobs" class="form-horizontal" novalidate="" id="frmJobs" >
+
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Address 1</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control has-error" id="address_1" name="address_1" placeholder="Address 1" value="{{address_1}}" 
+							ng-model="servicelist.address_1" ng-required="true">
+							<span class="help-inline" 
+							ng-show="frmJobs.address_1.$invalid && frmJobs.address_1.$touched">Address 1 field is required</span>
+						</div>
+					</div>
+
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Address 2</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control has-error" id="address_2" name="address_2" placeholder="Address 2" value="{{address_2}}" 
+							ng-model="servicelist.address_2" ng-required="true">
+							<span class="help-inline" 
+							ng-show="frmJobs.address_2.$invalid && frmJobs.address_2.$touched">Address 2 field is required</span>
+						</div>
+					</div>
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">City</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control has-error" id="city" name="city" placeholder="City" value="{{city}}" 
+							ng-model="servicelist.city" ng-required="true">
+							<span class="help-inline" 
+							ng-show="frmJobs.city.$invalid && frmJobs.city.$touched">City field is required</span>
+						</div>
+					</div>
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">State</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control has-error" id="state" name="state" placeholder="State" value="{{state}}" 
+							ng-model="servicelist.state" ng-required="true">
+							<span class="help-inline" 
+							ng-show="frmJobs.state.$invalid && frmJobs.state.$touched">State field is required</span>
+						</div>
+					</div>
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Zip</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control has-error" id="zip" name="zip" placeholder="Zip" value="{{zip}}" 
+							ng-model="servicelist.zip" ng-required="true">
+							<span class="help-inline" 
+							ng-show="frmJobs.zip.$invalid && frmJobs.zip.$touched">Zip field is required</span>
+						</div>
+					</div>
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Bill to</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control has-error" id="billto" name="billto" placeholder="Bill to" value="{{billto}}" 
+							ng-model="servicelist.billto" ng-required="true">
+							<span class="help-inline" 
+							ng-show="frmJobs.billto.$invalid && frmJobs.billto.$touched">Bill to field is required</span>
+						</div>
+					</div>
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Order</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control has-error" id="orders" name="orders" placeholder="Order" value="{{orders}}" 
+							ng-model="servicelist.orders" ng-required="true">
+							<span class="help-inline" 
+							ng-show="frmJobs.orders.$invalid && frmJobs.orders.$touched">Order field is required</span>
+						</div>
+					</div>
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Service</label>
+						<div class="col-sm-9">
+							<select name="service_id" class="form-control" id="service_id" ng-model="servicelist.service_id" ng-required="true">
+								<option value="">Select Service</option>
+								<option ng-repeat="x in allservices"  ng-selected="{{x.id == servicelist.service_id}}" value="{{x.id}}">{{x.name}}</option>
+							</select>
+							<span class="help-inline" 
+							ng-show="frmJobs.service_id.$invalid && frmJobs.service_id.$touched">Service field is required</span>
+						</div>
+					</div>
+
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Technician</label>
+						<div class="col-sm-9">
+							<select  name="technician_id" class="form-control" id="technician_id"  ng-model="servicelist.technician_id" ng-required="true" ng-init="servicelist.technician_id='27'">
+								<option value="" selected >Select Technician</option>
+								<option ng-repeat="x in alltechnicinas"  ng-selected="x.id == servicelist.technician_id"  value="{{x.id}}">{{x.name}}</option>
+							</select>
+							<span class="help-inline" 
+							ng-show="frmJobs.technician_id.$invalid && frmJobs.technician_id.$touched">Technician field is required</span>
+						</div>
+					</div>
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Service Description</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control has-error" id="service_description" name="service_description" placeholder="Service Description" value="{{orders}}" 
+							ng-model="servicelist.service_description" ng-required="true">
+							<span class="help-inline" 
+							ng-show="frmJobs.service_description.$invalid && frmJobs.service_description.$touched">Service Description field is required</span>
+						</div>
+					</div>
+
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Detail</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control has-error" id="detail" name="detail" placeholder="Detail" value="{{detail}}" 
+							ng-model="servicelist.detail" ng-required="true">
+							<span class="help-inline" 
+							ng-show="frmJobs.detail.$invalid && frmJobs.detail.$touched">Detail field is required</span>
+						</div>
+					</div>
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Work Date</label>
+						<div class="col-sm-9">
+							
+							<div class="input-group">
+								<input type="text" class="form-control has-error" ng-change="change()" datepicker-popup="{{formats}}" id="work_date" name="work_date" placeholder="Work Date" value="{{work_date}}" ng-model="servicelist.work_date" ng-required="true" is-open="opened" close-text="Close" />
+								<span class="input-group-btn">
+									<button type="button" class="btn btn-default" ng-click="open($event)">
+										<i class="glyphicon glyphicon-calendar"></i>
+									</button>
+								</span>
+							</div>
+							
+							<!--input type="text" class="form-control has-error" id="work_date" name="work_date" placeholder="Work Date" value="{{work_date}}" 
+							ng-model="servicelist.work_date" ng-required="true" datepicker-popup="dd.mm.yyyy" is-open="$parent.opened" ng-required="true" close-text="Close"-->
+							<span class="help-inline" 
+							ng-show="frmJobs.work_date.$invalid && frmJobs.work_date.$touched">Work Date field is required</span>
+						</div>
+					</div>
+
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Time Range</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control has-error" id="time_range" name="time_range" placeholder="Time Range" value="{{time_range}}" 
+							ng-model="servicelist.time_range" ng-required="true">
+							<span class="help-inline" 
+							ng-show="frmJobs.time_range.$invalid && frmJobs.time_range.$touched">Time Range field is required</span>
+						</div>
+					</div>
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Order Time</label>
+						<div class="col-sm-9">
+							
+							<input type="text" class="form-control has-error" id="time_range" name="order_time" placeholder="Order Time" value="{{order_time}}" 
+							ng-model="servicelist.order_time" ng-required="true">
+							<span class="help-inline" 
+							ng-show="frmJobs.order_time.$invalid && frmJobs.order_time.$touched">Time Range field is required</span>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-3 control-label">Order Instruction</label>
+						<div class="col-sm-9">
+							<textarea class="form-control" id="order_instruction" name="order_instruction" placeholder="Order Description"
+							ng-model="servicelist.order_instruction" ng-required="true">{{order_instruction}}</textarea>
+
+							<span class="help-inline" 
+							ng-show="frmJobs.order_instruction.$invalid && frmJobs.order_instruction.$touched">Order Description field is required</span>
+
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-3 control-label">Service Instruction</label>
+						<div class="col-sm-9">
+							<textarea class="form-control" id="service_instructions" name="service_instructions" placeholder="Service Description"
+							ng-model="servicelist.service_instructions" ng-required="true">{{service_instructions}}</textarea>
+							<span class="help-inline" 
+							ng-show="frmJobs.service_instructions.$invalid && frmJobs.service_instructions.$touched">Service Instruction field is required</span>
+						</div>
+					</div>
+	
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="btn-save" ng-click="save(modalstate, id)" ng-disabled="frmJobs.$invalid">Save changes</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Modal (Pop up when detail button clicked) -->
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
+				<h4 class="modal-title" id="myModalLabel">{{form_title}}</h4>
+			</div>
+			<div class="modal-body" ng-disabled="isClicked">
+				<form name="frmJobs" class="form-horizontal" novalidate="" id="frmJobs" >
+
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Address 1</label>
+						<div class="col-sm-9">
+							{{servicelist.address_1}}
+						</div>
+					</div>
+
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Address 2</label>
+						<div class="col-sm-9">
+							{{servicelist.address_2}}
+						</div>
+					</div>
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">City</label>
+						<div class="col-sm-9">
+							{{servicelist.city}}
+						</div>
+					</div>
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">State</label>
+						<div class="col-sm-9">
+							{{servicelist.state}}
+						</div>
+					</div>
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Zip</label>
+						<div class="col-sm-9">
+							{{servicelist.zip}}
+						</div>
+					</div>
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Bill to</label>
+						<div class="col-sm-9">
+							{{servicelist.billto}}
+						</div>
+					</div>
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Order</label>
+						<div class="col-sm-9">
+							{{servicelist.orders}}
+						</div>
+					</div>
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Service</label>
+						<div class="col-sm-9">
+							{{servicelist.service_id}}
+						</div>
+					</div>
+
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Technician</label>
+						<div class="col-sm-9">
+							{{servicelist.technician_id}}
+						</div>
+					</div>
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Service Description</label>
+						<div class="col-sm-9">
+							{{servicelist.orders}}
+						</div>
+					</div>
+
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Detail</label>
+						<div class="col-sm-9">
+							{{servicelist.detail}}
+						</div>
+					</div>
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Work Date</label>
+						<div class="col-sm-9">
+							{{servicelist.work_date}}
+						</div>
+					</div>
+
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Time Range</label>
+						<div class="col-sm-9">
+							{{servicelist.time_range}}
+						</div>
+					</div>
+					<div class="form-group error">
+						<label for="inputEmail3" class="col-sm-3 control-label">Order Time</label>
+						<div class="col-sm-9">
+							{{servicelist.order_time}}
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-3 control-label">Order Instruction</label>
+						<div class="col-sm-9">
+							{{servicelist.order_instruction}}
+
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-3 control-label">Service Instruction</label>
+						<div class="col-sm-9">
+							{{servicelist.service_instructions}}
+
+						</div>
+					</div>
+
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--script type="text/javscript">
+$(document).ready(function() {
+	$('#myModal').on('show.bs.modal', function(e) {
+		$('#service_id option:first-child').remove();
+		$('#technician_id option:first-child').remove();
+	});
+});
+</script-->
+
+</div>
+<!-- END MAIN CONTENT -->

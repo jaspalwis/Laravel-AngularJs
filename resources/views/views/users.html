@@ -1,0 +1,238 @@
+
+<!-- BEGIN PAGE HEADER-->
+<div class="page-bar">
+    <ul class="page-breadcrumb">
+        <li>
+            <i class="fa fa-home"></i>
+            <a href="#/dashboard.html">Home</a>
+            <i class="fa fa-angle-right"></i>
+        </li>
+        <li>
+            <a href="#/users.html">Users</a>
+        </li>
+    </ul>
+  
+</div>
+<h3 class="page-title"> Users
+    <small>users list</small>
+</h3>
+<!-- END PAGE HEADER-->
+<!-- BEGIN MAIN CONTENT -->
+<div class="row" ng-controller="UsersPageController" >
+    <div class="col-md-12">
+        <!-- BEGIN EXAMPLE TABLE PORTLET-->
+        <div class="portlet light bordered">
+            <div class="portlet-title">
+                <div class="caption font-dark">
+                    <i class="icon-settings font-dark"></i>
+                    <span class="caption-subject bold uppercase"> Managed Users</span>
+                </div>
+                <div class="actions">
+                    <!-- <div class="btn-group btn-group-devided" data-toggle="buttons">
+                        <label class="btn btn-transparent dark btn-outline btn-circle btn-sm active">
+                            <input type="radio" name="options" class="toggle" id="option1">Actions</label>
+                        <label class="btn btn-transparent dark btn-outline btn-circle btn-sm">
+                            <input type="radio" name="options" class="toggle" id="option2">Settings</label>
+                    </div> -->
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div class="table-toolbar">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="btn-group">
+								<button id="btn-add" class="btn sbold green" ng-click="usertoggle('add',0, 0)">Add New User
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="btn-group pull-right">
+								<div class="col-xs-6">
+									<input ng-model="q" id="search" class="form-control" placeholder="Search">
+								</div>
+								<div class="col-xs-6">
+								  <input type="number" min="1" max="100" class="form-control" ng-model="pageSize">
+								</div>
+								
+                             <!--   <button class="btn green  btn-outline dropdown-toggle" data-toggle="dropdown">Tools
+                                    <i class="fa fa-angle-down"></i>
+                                </button>
+                                <ul class="dropdown-menu pull-right">
+                                    <li>
+                                        <a href="javascript:;">
+                                            <i class="fa fa-print"></i> Print </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <i class="fa fa-file-pdf-o"></i> Save as PDF </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <i class="fa fa-file-excel-o"></i> Export to Excel </a>
+                                    </li>
+                                </ul>-->
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-striped table-bordered table-hover table-checkable order-column" id="userstable1">
+                    <thead>
+                        <tr>
+                            <th> Name </th>
+                            <th> Email </th>
+                            <th> Role </th>
+                            <th> Action </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="odd gradeX" dir-paginate="user in allusers | filter:q | itemsPerPage: pageSize" id="deleteuser{{ user.id }}">
+							
+							<td>{{ user.name }}</td>
+							<td>{{ user.email }}</td>
+							<td>{{ user.role }}</td>
+							
+							<td>
+								<button class="btn btn-default btn-xs btn-detail" ng-click="usertoggle('edit', user.id)">Edit</button>
+								<button ng-show="user.role != 'superadmin'" class="btn btn-danger btn-xs btn-delete" ng-click="confirmDeleteuser(user.id)">Delete</button>
+							</td>
+							
+                        </tr>
+                        
+                    </tbody>
+                </table>
+				
+				<dir-pagination-controls boundary-links="true" on-page-change="pageChangeHandler(newPageNumber)" template-url="tpl/dirPagination.tpl.html"></dir-pagination-controls>
+				
+            </div>
+        </div>
+        <!-- END EXAMPLE TABLE PORTLET-->
+    </div>
+	
+	
+	
+	
+	<!-- Modal (Pop up when detail button clicked) -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+					<h4 class="modal-title" id="myModalLabel">{{form_title}}</h4>
+				</div>
+				<div class="modal-body">
+					<form id="frmUsers" name="frmUsers" class="form-horizontal" novalidate="">
+
+						<div class="form-group error">
+							<label for="inputEmail3" class="col-sm-3 control-label">Name</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control has-error" id="name" name="name" placeholder="Fullname" value="{{name}}" 
+								ng-model="user.name" ng-required="true">
+								<span class="help-inline" 
+								ng-show="frmUsers.name.$invalid && frmUsers.name.$touched">Name field is required</span>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="inputEmail3" class="col-sm-3 control-label">Email</label>
+							<div class="col-sm-9">
+								<input type="email" class="form-control" id="email" name="email" placeholder="Email Address" value="{{email}}" 
+								ng-model="user.email" ng-required="true">
+								<span class="help-inline" 
+								ng-show="frmUsers.email.$invalid && frmUsers.email.$touched">Valid Email field is required</span>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="inputEmail3" class="col-sm-3 control-label">Password</label>
+							<div class="col-sm-9">
+								<input type="password" class="form-control" name="password" placeholder="Password" 
+								ng-model="user.password" ng-required="true" value="{{password}}" >
+								<span class="help-inline" 
+								ng-show="frmUsers.password.$invalid && frmUsers.password.$touched">Password field is required</span>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="inputEmail3" class="col-sm-3 control-label">Status</label>
+							<div class="col-sm-9">
+								<select name="status" class="form-control" ng-model="user.status" ng-required="true">
+									<option value="" >Select Status</option>
+									<option value="active" ng-selected="{{user.status == 'active'}}">Active</option>
+									<option value="inactive" ng-selected="{{user.status == 'inactive'}}">Inactive</option>
+									<option value="terminated" ng-selected="{{user.status == 'terminated'}}">Terminated</option>
+								</select>
+							<span class="help-inline" 
+								ng-show="frmUsers.status.$invalid && frmUsers.status.$touched">Status field is required</span>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="inputEmail3" class="col-sm-3 control-label">Role</label>
+							<div class="col-sm-9">
+								<select name="userrole" class="form-control" ng-model="user.userrole" ng-required="true">
+									<option value="" >Select Role</option>
+									<option value="2" ng-selected="userrole1 == '2'">Admin</option>
+									<option value="3" ng-selected="userrole1 == '3'">Supervisors</option>
+									<option value="4" ng-selected="userrole1 == '4'">Technicians</option>
+								</select>
+							<span class="help-inline" 
+								ng-show="frmUsers.role.$invalid && frmUsers.role.$touched">Role field is required</span>
+							</div>
+						</div>
+						
+						<div class="form-group" ng-show="user.userrole == 4">
+							<label for="inputEmail3" class="col-sm-3 control-label">PestPacName </label>
+							<div class="col-sm-9">
+								<input type="text" ng-disabled="user.userrole != 4" name="pestpacname" class="form-control" ng-model="user.pestpacname" >
+								
+							</div>
+						</div>
+						
+						<div class="form-group" ng-show="user.userrole == 4">
+							<label for="inputEmail3" class="col-sm-3 control-label">License Number </label>
+							<div class="col-sm-9">
+								<input type="text" ng-disabled="user.userrole != 4" name="license_number" class="form-control" ng-model="user.license_number" >
+								
+							</div>
+						</div>
+						
+						<div class="form-group" ng-show="user.userrole == 4">
+							<label for="inputEmail3" class="col-sm-3 control-label">Dropbox Images </label>
+							<div class="col-sm-9 form-inline">
+								<div class="radio">
+									<label><input type="radio" ng-disabled="user.userrole != 4" name="dropbox_images" class="form-control" ng-model="user.dropbox_images" value="yes" > Yes</label>
+								</div>
+								<div class="radio">
+									<label><input type="radio" ng-disabled="user.userrole != 4" name="dropbox_images" class="form-control" ng-model="user.dropbox_images" value="no" > No</label>
+								</div>
+							</div>
+						</div>
+						
+						<div class="form-group" ng-show="user.userrole == 4">
+							<label for="inputEmail3" class="col-sm-3 control-label">Dropbox Image Name </label>
+							<div class="col-sm-9">
+								<input type="text" ng-disabled="user.userrole != 4" name="dropbox_image_name" class="form-control" ng-model="user.dropbox_image_name"  >
+								
+							</div>
+						</div>
+						
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" id="btn-save" ng-click="saveuser(modalstate, id)" ng-disabled="frmUsers.$invalid">Save changes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	
+</div>
+
+<!-- END MAIN CONTENT -->
+<!-- BEGIN MAIN JS -->
+<script>
+    TableDatatablesManaged.init();
+</script>
+<!-- END MAIN JS -->
